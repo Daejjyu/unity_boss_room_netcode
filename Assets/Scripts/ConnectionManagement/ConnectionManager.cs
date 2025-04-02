@@ -69,7 +69,7 @@ namespace Unity.BossRoom.ConnectionManagement
     [Inject]
     IObjectResolver m_Resolver;
 
-    public int MaxConnectedPlayer = 8;
+    public int MaxConnectedPlayers = 8;
 
     internal readonly OfflineState m_Offline = new OfflineState();
     internal readonly ClientConnectingState m_ClientConnecting = new ClientConnectingState();

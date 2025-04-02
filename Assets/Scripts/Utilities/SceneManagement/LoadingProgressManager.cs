@@ -107,6 +107,7 @@ namespace Unity.Multiplayer.Samples.Utilities
             if (!IsHost)
             {
                 ProgressTrackers.Clear();
+#pragma warning disable CS0618 // 형식 또는 멤버는 사용되지 않습니다.
                 foreach (var tracker in FindObjectsOfType<NetworkedLoadingProgressTracker>())
                 {
                     // If a tracker is despawned but not destroyed yet, don't add it
@@ -119,6 +120,7 @@ namespace Unity.Multiplayer.Samples.Utilities
                         }
                     }
                 }
+#pragma warning restore CS0618 // 형식 또는 멤버는 사용되지 않습니다.
             }
             onTrackersUpdated?.Invoke();
         }
