@@ -8,6 +8,11 @@ namespace Unity.BossRoom.ConnectionManagement
     /// Connection state corresponding to a connected client. When being disconnected, transitions to the
     /// ClientReconnecting state if no reason is given, or to the Offline state.
     /// </summary>
+    /// <summary>
+    /// 연결된 클라이언트에 해당하는 연결 상태입니다. 
+    /// 클라이언트가 연결 해제될 경우, 이유가 제공되지 않으면 ClientReconnecting 상태로 전환되며, 
+    /// 이유가 제공된 경우 Offline 상태로 전환됩니다.
+    /// </summary>
     class ClientConnectedState : OnlineState
     {
         [Inject]

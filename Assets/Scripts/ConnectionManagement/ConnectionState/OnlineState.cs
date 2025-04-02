@@ -8,6 +8,7 @@ namespace Unity.BossRoom.ConnectionManagement
         public override void OnUserRequestedShutdown()
         {
             // This behaviour will be the same for every online state
+            // 이 동작은 모든 온라인 상태에서 동일하게 발생합니다.
             m_ConnectStatusPublisher.Publish(ConnectStatus.UserRequestedDisconnect);
             m_ConnectionManager.ChangeState(m_ConnectionManager.m_Offline);
         }

@@ -5,6 +5,9 @@ namespace Unity.BossRoom.Audio
     /// <summary>
     /// Music player that handles start of boss battle, victory and restart
     /// </summary>
+    /// <summary>
+    /// 보스 배틀 시작, 승리 및 재시작을 처리하는 음악 플레이어
+    /// </summary>
     [RequireComponent(typeof(AudioSource))]
     public class ClientMusicPlayer : MonoBehaviour
     {
@@ -23,6 +26,9 @@ namespace Unity.BossRoom.Audio
         /// <summary>
         /// static accessor for ClientMusicPlayer
         /// </summary>
+        /// <summary>
+        /// ClientMusicPlayer에 대한 정적 접근자
+        /// </summary>
         public static ClientMusicPlayer Instance { get; private set; }
 
         public void PlayThemeMusic(bool restart)
@@ -32,7 +38,8 @@ namespace Unity.BossRoom.Audio
 
         public void PlayBossMusic()
         {
-            // this can be caled multiple times - play with restart = false
+            // this can be called multiple times - play with restart = false
+            // 여러 번 호출할 수 있습니다 - restart = false로 재생
             PlayTrack(m_BossMusic, true, false);
         }
 
@@ -45,7 +52,8 @@ namespace Unity.BossRoom.Audio
         {
             if (m_source.isPlaying)
             {
-                // if we dont want to restart the clip, do nothing if it is playing
+                // if we don't want to restart the clip, do nothing if it is playing
+                // 클립을 재시작하고 싶지 않으면 재생 중이면 아무것도 하지 않음
                 if (!restart && m_source.clip == clip) { return; }
                 m_source.Stop();
             }

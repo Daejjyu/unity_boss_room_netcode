@@ -1,3 +1,8 @@
+/// <summary>
+/// Action을 생성하는 팩토리 메소드입니다. 요청된 데이터를 기반으로 Action을 만듭니다.
+/// </summary>
+/// <param name="data">이 스킬을 생성할 데이터를 나타냅니다.</param>
+/// <returns>새로 생성된 액션을 반환합니다.</returns>
 using System;
 using System.Collections.Generic;
 using Unity.BossRoom.Gameplay.GameplayObjects;
@@ -25,12 +30,11 @@ namespace Unity.BossRoom.Gameplay.Actions
             return actionPool;
         }
 
-
         /// <summary>
-        /// Factory method that creates Actions from their request data.
+        /// 요청된 데이터를 기반으로 Action을 생성하는 팩토리 메소드입니다.
         /// </summary>
-        /// <param name="data">the data to instantiate this skill from. </param>
-        /// <returns>the newly created action. </returns>
+        /// <param name="data">이 스킬을 생성할 데이터를 나타냅니다.</param>
+        /// <returns>새로 생성된 액션을 반환합니다.</returns>
         public static Action CreateActionFromData(ref ActionRequestData data)
         {
             var ret = GetActionPool(data.ActionID).Get();

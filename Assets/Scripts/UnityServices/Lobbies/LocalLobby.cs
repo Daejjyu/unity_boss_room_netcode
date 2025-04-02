@@ -8,6 +8,9 @@ namespace Unity.BossRoom.UnityServices.Lobbies
     /// <summary>
     /// A local wrapper around a lobby's remote data, with additional functionality for providing that data to UI elements and tracking local player objects.
     /// </summary>
+    /// <summary>
+    /// 원격 데이터를 감싸는 로컬 래퍼로, UI 요소에 해당 데이터를 제공하고 로컬 플레이어 객체를 추적하는 추가 기능을 포함합니다.
+    /// </summary>
     [Serializable]
     public sealed class LocalLobby
     {
@@ -15,6 +18,9 @@ namespace Unity.BossRoom.UnityServices.Lobbies
 
         /// <summary>
         /// Create a list of new LocalLobbies from the result of a lobby list query.
+        /// </summary>
+        /// <summary>
+        /// Lobby 목록 쿼리 결과에서 새로운 LocalLobby 목록을 생성합니다.
         /// </summary>
         public static List<LocalLobby> CreateLocalLobbies(QueryResponse response)
         {
@@ -217,7 +223,7 @@ namespace Unity.BossRoom.UnityServices.Lobbies
         public Dictionary<string, DataObject> GetDataForUnityServices() =>
             new Dictionary<string, DataObject>()
             {
-                {"RelayJoinCode", new DataObject(DataObject.VisibilityOptions.Public,  RelayJoinCode)}
+            {"RelayJoinCode", new DataObject(DataObject.VisibilityOptions.Public,  RelayJoinCode)}
             };
 
         public void ApplyRemoteData(Lobby lobby)
@@ -252,6 +258,8 @@ namespace Unity.BossRoom.UnityServices.Lobbies
 
                 // If the player isn't connected to Relay, get the most recent data that the lobby knows.
                 // (If we haven't seen this player yet, a new local representation of the player will have already been added by the LocalLobby.)
+                // 플레이어가 Relay에 연결되지 않은 경우, 로비가 알고 있는 가장 최신 데이터를 가져옵니다.
+                // (만약 이 플레이어를 아직 보지 않았다면, LocalLobby에서 이미 플레이어의 새로운 로컬 표현이 추가되었을 것입니다.)
                 var incomingData = new LocalLobbyUser
                 {
                     IsHost = lobby.HostId.Equals(player.Id),

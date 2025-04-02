@@ -7,6 +7,9 @@ namespace Unity.BossRoom.Gameplay.GameplayObjects
     /// <summary>
     /// A runtime list of <see cref="PersistentPlayer"/> objects that is populated both on clients and server.
     /// </summary>
+    /// <summary>
+    /// 클라이언트와 서버에서 모두 채워지는 <see cref="PersistentPlayer"/> 객체의 런타임 리스트입니다.
+    /// </summary>
     [CreateAssetMenu]
     public class PersistentPlayerRuntimeCollection : RuntimeCollection<PersistentPlayer>
     {

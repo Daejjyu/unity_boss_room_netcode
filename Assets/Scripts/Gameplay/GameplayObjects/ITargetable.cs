@@ -3,7 +3,8 @@ using System;
 namespace Unity.BossRoom.Gameplay.GameplayObjects
 {
     /// <summary>
-    /// Entities that are Targetable by Skills should have their shared NetworkState component implement this interface.
+    /// Entities that are Targetable by Skills should have 
+    // their shared NetworkState component implement this interface.
     /// </summary>
     public interface ITargetable
     {

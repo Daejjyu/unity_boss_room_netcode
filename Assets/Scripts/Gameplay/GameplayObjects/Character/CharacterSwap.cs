@@ -6,7 +6,12 @@ using UnityEngine;
 namespace Unity.BossRoom.Gameplay.GameplayObjects.Character
 {
     /// <summary>
-    /// Responsible for storing of all of the pieces of a character, and swapping the pieces out en masse when asked to.
+    /// Responsible for storing of all of the pieces of a character, 
+    /// and swapping the pieces out en masse when asked to.
+    /// </summary>
+    /// <summary>
+    /// 캐릭터의 모든 조각들을 저장하고, 
+    /// 요청 시 한 번에 모든 조각을 교체하는 역할을 합니다.
     /// </summary>
     public class CharacterSwap : MonoBehaviour
     {
@@ -85,12 +90,20 @@ namespace Unity.BossRoom.Gameplay.GameplayObjects.Character
         /// Reference to our shared-characters' animator.
         /// Can be null, but if so, animator overrides are not supported!
         /// </summary>
+        /// <summary>
+        /// 공유된 캐릭터들의 애니메이터에 대한 참조입니다.
+        /// null일 수 있지만, 그렇다면 애니메이터 오버라이드는 지원되지 않습니다!
+        /// </summary>
         [SerializeField]
         private Animator m_Animator;
 
         /// <summary>
         /// Reference to the original controller in our Animator.
         /// We switch back to this whenever we don't have an Override.
+        /// </summary>
+        /// <summary>
+        /// 애니메이터에서 원본 컨트롤러에 대한 참조입니다.
+        /// 오버라이드가 없을 때마다 이 컨트롤러로 돌아갑니다.
         /// </summary>
         private RuntimeAnimatorController m_OriginalController;
 
@@ -113,6 +126,10 @@ namespace Unity.BossRoom.Gameplay.GameplayObjects.Character
         /// When we swap all our Materials out for a special material,
         /// we keep the old references here, so we can swap them back.
         /// </summary>
+        /// <summary>
+        /// 모든 재질을 특별한 재질로 교체할 때,
+        /// 이전 재질 참조를 여기 보관하여 다시 교체할 수 있습니다.
+        /// </summary>
         private Dictionary<Renderer, Material> m_OriginalMaterials = new Dictionary<Renderer, Material>();
 
         ClientCharacter m_ClientCharacter;
@@ -129,13 +146,21 @@ namespace Unity.BossRoom.Gameplay.GameplayObjects.Character
             // It's important that the original Materials that we pulled out of the renderers are put back.
             // Otherwise nothing will Destroy() them and they will leak! (Alternatively we could manually
             // Destroy() these in our OnDestroy(), but in this case it makes more sense just to put them back.)
+            // 렌더러에서 뽑아낸 원본 재질들이 다시 넣어지는 것이 중요합니다.
+            // 그렇지 않으면 아무것도 이 재질들을 Destroy()하지 않아서 메모리 누수가 발생할 수 있습니다! (대안으로는
+            // OnDestroy()에서 이들을 수동으로 Destroy()할 수 있지만, 이 경우 재질을 다시 넣는 것이 더 합리적입니다.)
             ClearOverrideMaterial();
         }
+
 
         /// <summary>
         /// Swap the visuals of the character to the index passed in.
         /// </summary>
         /// <param name="specialMaterialMode">Special Material to apply to all body parts</param>
+        /// /// <summary>
+        /// 캐릭터의 비주얼을 전달된 인덱스에 맞게 교체합니다.
+        /// </summary>
+        /// <param name="specialMaterialMode">모든 신체 부위에 적용할 특별한 재질</param>
         public void SwapToModel(SpecialMaterialMode specialMaterialMode = SpecialMaterialMode.None)
         {
             ClearOverrideMaterial();
@@ -148,6 +173,7 @@ namespace Unity.BossRoom.Gameplay.GameplayObjects.Character
             if (m_Animator)
             {
                 // plug in the correct animator override... or plug the original non - overridden version back in!
+                // 올바른 애니메이터 오버라이드를 연결하거나, 원본 오버라이드되지 않은 버전을 다시 연결합니다!
                 if (m_CharacterModel.animatorOverrides)
                 {
                     m_Animator.runtimeAnimatorController = m_CharacterModel.animatorOverrides;
@@ -159,6 +185,7 @@ namespace Unity.BossRoom.Gameplay.GameplayObjects.Character
             }
 
             // lastly, now that we're all assembled, apply any override material.
+            // 마지막으로, 이제 모든 것이 조립되었으므로, 오버라이드된 재질을 적용합니다.
             switch (specialMaterialMode)
             {
                 case SpecialMaterialMode.StealthySelf:
@@ -176,7 +203,7 @@ namespace Unity.BossRoom.Gameplay.GameplayObjects.Character
             {
                 if (entry.Key)
                 {
-                    entry.Key.material = entry.Value;
+                    entry.Key.material = entry`.Value;
                 }
             }
             m_OriginalMaterials.Clear();
@@ -184,7 +211,9 @@ namespace Unity.BossRoom.Gameplay.GameplayObjects.Character
 
         private void SetOverrideMaterial(Material overrideMaterial)
         {
-            ClearOverrideMaterial(); // just sanity-checking; this should already have been called!
+            // just sanity-checking; this should already have been called!
+            // 그냥 정상 확인 중; 이 함수는 이미 호출되었어야 합니다!
+            ClearOverrideMaterial();
             foreach (var bodyPart in m_CharacterModel.GetAllBodyParts())
             {
                 if (bodyPart)

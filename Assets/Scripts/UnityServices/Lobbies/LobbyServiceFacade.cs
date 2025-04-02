@@ -1,3 +1,10 @@
+
+/// <summary>
+/// An abstraction layer between the direct calls into the Lobby API and the outcomes you actually want.
+/// </summary>
+/// <summary>
+/// Lobby API의 직접 호출과 실제로 원하는 결과 사이의 추상화 계층입니다.
+/// </summary>
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -13,7 +20,10 @@ using VContainer.Unity;
 namespace Unity.BossRoom.UnityServices.Lobbies
 {
     /// <summary>
-    /// An abstraction layer between the direct calls into the Lobby API and the outcomes you actually want.
+    /// Manages the interactions with the Unity Lobby service, including creating, joining, tracking, and leaving lobbies.
+    /// </summary>
+    /// <summary>
+    /// Unity Lobby 서비스와의 상호작용을 관리하며, 프로필 생성, 참여, 추적 및 퇴장 기능을 포함합니다.
     /// </summary>
     public class LobbyServiceFacade : IDisposable, IStartable
     {
@@ -25,6 +35,9 @@ namespace Unity.BossRoom.UnityServices.Lobbies
         [Inject] IPublisher<LobbyListFetchedMessage> m_LobbyListFetchedPub;
 
         const float k_HeartbeatPeriod = 8; // The heartbeat must be rate-limited to 5 calls per 30 seconds. We'll aim for longer in case periods don't align.
+        /// <summary>
+        /// 하트비트는 30초당 5회의 호출로 제한되어야 합니다. 주기가 맞지 않으면 더 긴 주기를 사용할 예정입니다.
+        /// </summary>
         float m_HeartbeatTime = 0;
 
         LifetimeScope m_ServiceScope;
@@ -68,6 +81,12 @@ namespace Unity.BossRoom.UnityServices.Lobbies
             }
         }
 
+        /// <summary>
+        /// Sets the current remote lobby and applies remote data to the local lobby.
+        /// </summary>
+        /// <summary>
+        /// 현재 원격 로비를 설정하고 원격 데이터를 로컬 로비에 적용합니다.
+        /// </summary>
         public void SetRemoteLobby(Lobby lobby)
         {
             CurrentUnityLobby = lobby;
@@ -76,6 +95,9 @@ namespace Unity.BossRoom.UnityServices.Lobbies
 
         /// <summary>
         /// Initiates tracking of joined lobby's events. The host also starts sending heartbeat pings here.
+        /// </summary>
+        /// <summary>
+        /// 참여한 로비의 이벤트 추적을 시작합니다. 호스트는 이곳에서 하트비트 핑을 보내기 시작합니다.
         /// </summary>
         public void BeginTracking()
         {
@@ -95,6 +117,9 @@ namespace Unity.BossRoom.UnityServices.Lobbies
 
         /// <summary>
         /// Ends tracking of joined lobby's events and leaves or deletes the lobby. The host also stops sending heartbeat pings here.
+        /// </summary>
+        /// <summary>
+        /// 참여한 로비의 이벤트 추적을 종료하고 로비를 나가거나 삭제합니다. 호스트는 이곳에서 하트비트 핑을 중지합니다.
         /// </summary>
         public void EndTracking()
         {
@@ -126,6 +151,9 @@ namespace Unity.BossRoom.UnityServices.Lobbies
         /// <summary>
         /// Attempt to create a new lobby and then join it.
         /// </summary>
+        /// <summary>
+        /// 새 로비를 생성하고 이를 참가하려고 시도합니다.
+        /// </summary>
         public async Task<(bool Success, Lobby Lobby)> TryCreateLobbyAsync(string lobbyName, int maxPlayers, bool isPrivate)
         {
             if (!m_RateLimitHost.CanCall)
@@ -156,6 +184,9 @@ namespace Unity.BossRoom.UnityServices.Lobbies
 
         /// <summary>
         /// Attempt to join an existing lobby. Will try to join via code, if code is null - will try to join via ID.
+        /// </summary>
+        /// <summary>
+        /// 기존 로비에 참여하려고 시도합니다. 코드가 null이면 ID로 참가를 시도합니다.
         /// </summary>
         public async Task<(bool Success, Lobby Lobby)> TryJoinLobbyAsync(string lobbyId, string lobbyCode)
         {
@@ -197,6 +228,9 @@ namespace Unity.BossRoom.UnityServices.Lobbies
         /// <summary>
         /// Attempt to join the first lobby among the available lobbies that match the filtered onlineMode.
         /// </summary>
+        /// <summary>
+        /// 필터링된 onlineMode와 일치하는 사용 가능한 로비 중 첫 번째 로비에 참가하려고 시도합니다.
+        /// </summary>
         public async Task<(bool Success, Lobby Lobby)> TryQuickJoinLobbyAsync()
         {
             if (!m_RateLimitQuickJoin.CanCall)
@@ -225,6 +259,12 @@ namespace Unity.BossRoom.UnityServices.Lobbies
             return (false, null);
         }
 
+        /// <summary>
+        /// Resets the current lobby and user state, preparing for a new session or disconnection.
+        /// </summary>
+        /// <summary>
+        /// 현재 로비와 사용자 상태를 초기화하여 새로운 세션 또는 연결 해제를 준비합니다.
+        /// </summary>
         void ResetLobby()
         {
             CurrentUnityLobby = null;
@@ -240,6 +280,12 @@ namespace Unity.BossRoom.UnityServices.Lobbies
             // no need to disconnect Netcode, it should already be handled by Netcode's callback to disconnect
         }
 
+        /// <summary>
+        /// Handles the changes to the lobby, such as deletion or updates.
+        /// </summary>
+        /// <summary>
+        /// 로비에 대한 변경 사항(예: 삭제 또는 업데이트)을 처리합니다.
+        /// </summary>
         void OnLobbyChanges(ILobbyChanges changes)
         {
             if (changes.LobbyDeleted)
@@ -272,6 +318,12 @@ namespace Unity.BossRoom.UnityServices.Lobbies
             }
         }
 
+        /// <summary>
+        /// Handles the event of being kicked from the lobby.
+        /// </summary>
+        /// <summary>
+        /// 로비에서 강퇴된 이벤트를 처리합니다.
+        /// </summary>
         void OnKickedFromLobby()
         {
             Debug.Log("Kicked from Lobby");
@@ -279,12 +331,24 @@ namespace Unity.BossRoom.UnityServices.Lobbies
             EndTracking();
         }
 
+        /// <summary>
+        /// Handles the lobby event connection state changes.
+        /// </summary>
+        /// <summary>
+        /// 로비 이벤트 연결 상태 변경을 처리합니다.
+        /// </summary>
         void OnLobbyEventConnectionStateChanged(LobbyEventConnectionState lobbyEventConnectionState)
         {
             m_LobbyEventConnectionState = lobbyEventConnectionState;
             Debug.Log($"LobbyEventConnectionState changed to {lobbyEventConnectionState}");
         }
 
+        /// <summary>
+        /// Subscribes to the events of the joined lobby asynchronously.
+        /// </summary>
+        /// <summary>
+        /// 비동기적으로 참여한 로비의 이벤트에 구독합니다.
+        /// </summary>
         async void SubscribeToJoinedLobbyAsync()
         {
             var lobbyEventCallbacks = new LobbyEventCallbacks();
@@ -296,6 +360,12 @@ namespace Unity.BossRoom.UnityServices.Lobbies
             m_LobbyEvents = await m_LobbyApiInterface.SubscribeToLobby(m_LocalLobby.LobbyID, lobbyEventCallbacks);
         }
 
+        /// <summary>
+        /// Unsubscribes from the events of the joined lobby asynchronously.
+        /// </summary>
+        /// <summary>
+        /// 비동기적으로 참여한 로비의 이벤트 구독을 취소합니다.
+        /// </summary>
         async void UnsubscribeToJoinedLobbyAsync()
         {
             if (m_LobbyEvents != null && m_LobbyEventConnectionState != LobbyEventConnectionState.Unsubscribed)
@@ -312,13 +382,16 @@ namespace Unity.BossRoom.UnityServices.Lobbies
                     Debug.Log(e.Message);
                 }
 #else
-                await m_LobbyEvents.UnsubscribeAsync();
+        await m_LobbyEvents.UnsubscribeAsync();
 #endif
             }
         }
 
         /// <summary>
-        /// Used for getting the list of all active lobbies, without needing full info for each.
+        /// Retrieves and publishes the list of all active lobbies without needing full information for each.
+        /// </summary>
+        /// <summary>
+        /// 각 로비에 대한 자세한 정보 없이 모든 활성 로비 목록을 검색하고 게시합니다.
         /// </summary>
         public async Task RetrieveAndPublishLobbyListAsync()
         {
@@ -346,6 +419,12 @@ namespace Unity.BossRoom.UnityServices.Lobbies
             }
         }
 
+        /// <summary>
+        /// Attempts to reconnect to a previously joined lobby.
+        /// </summary>
+        /// <summary>
+        /// 이전에 참가한 로비에 재연결을 시도합니다.
+        /// </summary>
         public async Task<Lobby> ReconnectToLobbyAsync()
         {
             try
@@ -365,7 +444,10 @@ namespace Unity.BossRoom.UnityServices.Lobbies
         }
 
         /// <summary>
-        /// Attempt to leave a lobby
+        /// Attempts to leave the lobby asynchronously.
+        /// </summary>
+        /// <summary>
+        /// 비동기적으로 로비를 떠나려고 시도합니다.
         /// </summary>
         async void LeaveLobbyAsync()
         {
@@ -389,6 +471,12 @@ namespace Unity.BossRoom.UnityServices.Lobbies
 
         }
 
+        /// <summary>
+        /// Removes a player from the lobby asynchronously, only if the current user is the host.
+        /// </summary>
+        /// <summary>
+        /// 현재 사용자가 호스트일 경우에만 비동기적으로 로비에서 선수를 제거합니다.
+        /// </summary>
         public async void RemovePlayerFromLobbyAsync(string uasId)
         {
             if (m_LocalUser.IsHost)
@@ -408,6 +496,12 @@ namespace Unity.BossRoom.UnityServices.Lobbies
             }
         }
 
+        /// <summary>
+        /// Attempts to delete the current lobby, but only if the current user is the host.
+        /// </summary>
+        /// <summary>
+        /// 현재 로비를 삭제하려고 시도합니다. 단, 현재 사용자가 호스트일 경우에만 가능합니다.
+        /// </summary>
         async void DeleteLobbyAsync()
         {
             if (m_LocalUser.IsHost)
@@ -432,10 +526,14 @@ namespace Unity.BossRoom.UnityServices.Lobbies
         }
 
         /// <summary>
-        /// Attempt to push a set of key-value pairs associated with the local player which will overwrite any existing
-        /// data for these keys. Lobby can be provided info about Relay (or any other remote allocation) so it can add
-        /// automatic disconnect handling.
+        /// Attempts to update the set of key-value pairs associated with the local player and handle any relay (or remote allocation) data.
+        /// This will overwrite any existing data for the given keys.
         /// </summary>
+        /// <summary>
+        /// 로컬 플레이어와 관련된 키-값 쌍을 업데이트하려고 시도하며, 이로 인해 기존의 데이터를 덮어씁니다.
+        /// 또한 릴레이(또는 원격 할당) 데이터가 포함될 수 있습니다.
+        /// </summary>
+        /// 
         public async Task UpdatePlayerDataAsync(string allocationId, string connectionInfo)
         {
             if (!m_RateLimitQuery.CanCall)
@@ -466,7 +564,10 @@ namespace Unity.BossRoom.UnityServices.Lobbies
         }
 
         /// <summary>
-        /// Attempt to update the set of key-value pairs associated with a given lobby and unlocks it so clients can see it.
+        /// Attempts to update the set of key-value pairs associated with the current lobby and unlocks it so clients can see it.
+        /// </summary>
+        /// <summary>
+        /// 현재 로비에 연결된 키-값 쌍을 업데이트하고 로비를 잠금 해제하여 클라이언트들이 이를 볼 수 있게 합니다.
         /// </summary>
         public async Task UpdateLobbyDataAndUnlockAsync()
         {
@@ -518,7 +619,10 @@ namespace Unity.BossRoom.UnityServices.Lobbies
         }
 
         /// <summary>
-        /// Lobby requires a periodic ping to detect rooms that are still active, in order to mitigate "zombie" lobbies.
+        /// Sends a periodic "heartbeat" ping to the lobby to keep it active and avoid "zombie" lobbies.
+        /// </summary>
+        /// <summary>
+        /// 로비에 주기적인 "하트비트" 핑을 보내어 로비를 활성 상태로 유지하고 "좀비" 로비를 방지합니다.
         /// </summary>
         void DoLobbyHeartbeat(float dt)
         {
@@ -541,6 +645,12 @@ namespace Unity.BossRoom.UnityServices.Lobbies
             }
         }
 
+        /// <summary>
+        /// Publishes an error message with the details of the LobbyServiceException.
+        /// </summary>
+        /// <summary>
+        /// LobbyServiceException의 세부 사항을 포함하여 오류 메시지를 게시합니다.
+        /// </summary>
         void PublishError(LobbyServiceException e)
         {
             var reason = e.InnerException == null ? e.Message : $"{e.Message} ({e.InnerException.Message})"; // Lobby error type, then HTTP error type.

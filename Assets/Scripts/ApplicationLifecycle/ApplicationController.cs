@@ -38,7 +38,7 @@ namespace Unity.BossRoom.ApplicationLifecycle
     public class ApplicationController : LifetimeScope
     {
         [SerializeField]
-        UpdateRunner m_UpdateRunner;
+        UpdateRunner m_UpdateRunner; // Pub/Sub 패턴을 이용, Pure C# 코드를 MonoBehaviour Update에 등록
         [SerializeField]
         ConnectionManager m_ConnectionManager;
         [SerializeField]
@@ -142,6 +142,7 @@ namespace Unity.BossRoom.ApplicationLifecycle
         ///     So, we need to delay just briefly to let the request happen (though we don't need to wait for the result).
         ///     빌드에서, 로비에 있을 때 애플리케이션 종료 시 Leave 요청을 보내면, 같은 프레임에서 종료하면 요청이 처리되지 않습니다.
         ///     따라서 요청을 처리할 수 있도록 잠시 지연시켜야 합니다 (결과를 기다릴 필요는 없습니다).
+        ///     바로 처리하지 않고 네트워크로 보내기 위한 시간 대기
         /// </summary>
         private IEnumerator LeaveBeforeQuit()
         {

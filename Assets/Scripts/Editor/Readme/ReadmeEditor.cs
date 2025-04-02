@@ -1,13 +1,17 @@
-using UnityEngine;
-using UnityEditor;
 using System;
 using System.IO;
 using System.Reflection;
+using UnityEditor;
+using UnityEngine;
 
 namespace Unity.BossRoom.Editor
 {
     /// <remarks>
     /// Custom readme editor window based on the readme created for URP. For more context, see:
+    /// https://github.com/Unity-Technologies/Graphics/tree/master/com.unity.template-universal
+    /// </remarks>
+    /// <remarks>
+    /// URP용으로 생성된 README를 기반으로 한 사용자 지정 에디터 창입니다. 더 많은 정보는 다음을 참조하십시오:
     /// https://github.com/Unity-Technologies/Graphics/tree/master/com.unity.template-universal
     /// </remarks>
     [CustomEditor(typeof(Readme))]
@@ -57,6 +61,9 @@ namespace Unity.BossRoom.Editor
             EditorApplication.delayCall += SelectReadmeAutomatically;
         }
 
+        /// <summary>
+        /// 자동으로 README를 선택하는 함수
+        /// </summary>
         static void SelectReadmeAutomatically()
         {
             if (!SessionState.GetBool(k_ShowedReadmeSessionStateName, false))
@@ -72,6 +79,9 @@ namespace Unity.BossRoom.Editor
             }
         }
 
+        /// <summary>
+        /// 레이아웃을 로드하는 함수
+        /// </summary>
         static void LoadLayout()
         {
             var assembly = typeof(EditorApplication).Assembly;
@@ -80,6 +90,10 @@ namespace Unity.BossRoom.Editor
             method?.Invoke(null, new object[] { Path.Combine(Application.dataPath, "TutorialInfo/Layout.wlt"), false });
         }
 
+        /// <summary>
+        /// 메뉴 항목에서 README를 선택하는 함수
+        /// </summary>
+        /// <returns>선택된 Readme 객체</returns>
         [MenuItem("Boss Room/Show Sample Instructions")]
         static Readme SelectReadme()
         {
@@ -143,8 +157,6 @@ namespace Unity.BossRoom.Editor
             }
         }
 
-
-
         void Init()
         {
             if (m_Initialized)
@@ -163,6 +175,7 @@ namespace Unity.BossRoom.Editor
             m_LinkStyle.wordWrap = false;
 
             // Match selection color which works nicely for both light and dark skins
+            // 라이트 및 다크 스킨 모두에 잘 작동하는 선택 색상 일치
             m_LinkStyle.normal.textColor = new Color(0x00 / 255f, 0x78 / 255f, 0xDA / 255f, 1f);
             m_LinkStyle.stretchWidth = false;
 

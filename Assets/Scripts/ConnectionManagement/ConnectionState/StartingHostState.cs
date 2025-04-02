@@ -12,6 +12,13 @@ namespace Unity.BossRoom.ConnectionManagement
     /// Connection state corresponding to a host starting up. Starts the host when entering the state. If successful,
     /// transitions to the Hosting state, if not, transitions back to the Offline state.
     /// </summary>
+    /// 
+    /// <summary>
+    /// 호스트가 시작되는 과정에 해당하는 연결 상태입니다.
+    /// 이 상태에 진입하면 호스트를 시작합니다.
+    /// 성공하면 Hosting 상태로 전환되며, 실패하면 Offline 상태로 되돌아갑니다.
+    /// </summary>
+
     class StartingHostState : OnlineState
     {
         [Inject]
@@ -44,6 +51,7 @@ namespace Unity.BossRoom.ConnectionManagement
             var connectionData = request.Payload;
             var clientId = request.ClientNetworkId;
             // This happens when starting as a host, before the end of the StartHost call. In that case, we simply approve ourselves.
+            // 호스트로 시작할 때, StartHost 호출이 끝나기 전에 발생하는 경우입니다. 이때는 자신을 승인합니다.
             if (clientId == m_ConnectionManager.NetworkManager.LocalClientId)
             {
                 var payload = System.Text.Encoding.UTF8.GetString(connectionData);
@@ -52,7 +60,7 @@ namespace Unity.BossRoom.ConnectionManagement
                 SessionManager<SessionPlayerData>.Instance.SetupConnectingPlayerSessionData(clientId, connectionPayload.playerId,
                     new SessionPlayerData(clientId, connectionPayload.playerName, new NetworkGuid(), 0, true));
 
-                // connection approval will create a player object for you
+                // 연결 승인이 이루어지면 플레이어 객체가 생성됩니다.
                 response.Approved = true;
                 response.CreatePlayerObject = true;
             }
@@ -69,7 +77,7 @@ namespace Unity.BossRoom.ConnectionManagement
             {
                 await m_ConnectionMethod.SetupHostConnectionAsync();
 
-                // NGO's StartHost launches everything
+                // NGO의 StartHost가 모든 것을 시작합니다.
                 if (!m_ConnectionManager.NetworkManager.StartHost())
                 {
                     StartHostFailed();

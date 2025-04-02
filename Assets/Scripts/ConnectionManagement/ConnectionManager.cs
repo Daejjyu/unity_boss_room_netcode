@@ -93,6 +93,8 @@ namespace Unity.BossRoom.ConnectionManagement
             List<ConnectionState> states = new() { m_Offline, m_ClientConnecting, m_ClientConnected, m_ClientReconnecting, m_StartingHost, m_Hosting };
             foreach (var connectionState in states)
             {
+                // 이 방식은 특정 객체의 생명 주기를 수동으로 관리하면서도, 의존성 주입의 편리함을 유지하는 전략
+                // VContainer로 Register vs Inject를 사용하여 의존성 주입을 수행
                 m_Resolver.Inject(connectionState);  // 각 상태 객체에 의존성 주입
             }
 

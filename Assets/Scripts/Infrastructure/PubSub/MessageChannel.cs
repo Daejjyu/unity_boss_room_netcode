@@ -11,6 +11,9 @@ namespace Unity.BossRoom.Infrastructure
         /// This dictionary of handlers to be either added or removed is used to prevent problems from immediate
         /// modification of the list of subscribers. It could happen if one decides to unsubscribe in a message handler
         /// etc.A true value means this handler should be added, and a false one means it should be removed
+        /// 이 핸들러의 사전(Dictionary)은 구독자 목록을 즉시 수정함으로써 발생할 수 있는 문제를 방지하는 데 사용됩니다.
+        /// 예를 들어, 메시지 핸들러 내에서 구독을 취소하려는 경우 등이 이에 해당합니다.
+        /// `true` 값은 이 핸들러가 추가되어야 함을 의미하며, `false` 값은 이 핸들러가 제거되어야 함을 의미합니다.
         readonly Dictionary<Action<T>, bool> m_PendingHandlers = new Dictionary<Action<T>, bool>();
 
         public bool IsDisposed { get; private set; } = false;

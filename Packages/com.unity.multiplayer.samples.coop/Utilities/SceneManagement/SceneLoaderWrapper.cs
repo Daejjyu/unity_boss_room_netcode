@@ -11,6 +11,13 @@ namespace Unity.Multiplayer.Samples.Utilities
         /// or, on listening servers for which scene management is enabled, using the NetworkSceneManager and handles
         /// the starting and stopping of the loading screen.
         /// </summary>
+        /// <summary>
+        /// 씬 관리 API를 감싸서 로딩 화면을 관리합니다. 
+        ///  SceneManager를 사용하여 씬을 로드하거나, 
+        /// 씬 관리가 활성화된 리스닝 서버에서는 NetworkSceneManager를 사용하여 
+        /// 씬을 로드하고, 로딩 화면의 시작과 종료를 처리합니다.
+        /// </summary>
+
 
         [SerializeField]
         ClientLoadingScreen m_ClientLoadingScreen;

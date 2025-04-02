@@ -18,13 +18,20 @@ namespace Unity.BossRoom.Gameplay.GameplayObjects.AnimationCallbacks
     /// (or exiting) specific nodes in an Animator. (Each relevant Animator node must have an
     /// AnimationNodeHook component attached.)
     /// </summary>
+    /// <summary>
+    /// 그래픽 프리팹과 사운드 효과를 인스턴스화하고 유지합니다. 이들은 Animator의 특정 노드를 
+    /// 들어가거나 나가면서 트리거됩니다. (각 관련된 Animator 노드에는 AnimationNodeHook 컴포넌트가 첨부되어야 합니다.)
+    /// </summary>
     public class AnimatorTriggeredSpecialFX : MonoBehaviour
     {
         [SerializeField]
         [Tooltip("Unused by the game and provided only for internal dev comments; put whatever you want here")]
         [TextArea]
-        private string DevNotes; // e.g. "this is for the tank class". Documentation for the artists, because all 4 class's AnimatorTriggeredSpecialFX components are on the same GameObject. Can remove later if desired
-
+        private string DevNotes;
+        // e.g. "this is for the tank class". Documentation for the artists, because all 4 class's AnimatorTriggeredSpecialFX components are on the same GameObject. Can remove later if desired
+        // 예: "이것은 탱크 클래스용입니다". 모든 4개의 클래스의 
+        // AnimatorTriggeredSpecialFX 컴포넌트가 동일한 GameObject에 있기 때문에 
+        // 아티스트를 위한 문서입니다. 원할 경우 나중에 제거할 수 있습니다
         [Serializable]
         internal class AnimatorNodeEntryEvent
         {
@@ -66,17 +73,28 @@ namespace Unity.BossRoom.Gameplay.GameplayObjects.AnimationCallbacks
         /// play one looping sound at a time.
         /// (These AudioSources are typically on the same GameObject as us, but they don't have to be.)
         /// </summary>
+        /// <summary>
+        /// 이는 우리가 사운드를 재생하는 데 사용할 AudioSource입니다. 반복되지 않는 사운드에는 하나만 필요하지만,
+        /// 여러 개의 반복되는 사운드를 재생하려면 추가적인 AudioSource가 필요합니다. 각 AudioSource는 한 번에 하나의 반복되는 사운드만 재생할 수 있기 때문입니다.
+        /// (이 AudioSource들은 일반적으로 우리와 같은 GameObject에 있지만, 반드시 그럴 필요는 없습니다.)
+        /// </summary>
         [SerializeField]
         internal AudioSource[] m_AudioSources;
 
         /// <summary>
         /// cached reference to our Animator.
         /// </summary>
+        /// <summary>
+        /// Animator에 대한 캐시된 참조입니다.
+        /// </summary>
         [SerializeField]
         private Animator m_Animator;
 
         /// <summary>
         /// contains the shortNameHash of all the active animation nodes right now
+        /// </summary>
+        /// <summary>
+        /// 현재 활성화된 모든 애니메이션 노드의 shortNameHash를 포함합니다.
         /// </summary>
         private HashSet<int> m_ActiveNodes = new HashSet<int>();
 
@@ -103,6 +121,7 @@ namespace Unity.BossRoom.Gameplay.GameplayObjects.AnimationCallbacks
             m_ActiveNodes.Add(stateInfo.shortNameHash);
 
             // figure out which of our on-node-enter events (if any) should be triggered, and trigger it
+            // 어떤 on-node-enter 이벤트 (있다면)가 트리거되어야 할지 확인하고, 이를 트리거합니다
             foreach (var info in m_EventsOnNodeEntry)
             {
                 if (info.m_AnimatorNodeNameHash == stateInfo.shortNameHash)
@@ -120,6 +139,7 @@ namespace Unity.BossRoom.Gameplay.GameplayObjects.AnimationCallbacks
         }
 
         // creates and manages the graphics prefab (but not the sound effect) of an on-enter event
+        // on-enter 이벤트의 그래픽 프리팹을 생성하고 관리합니다 (하지만 사운드 효과는 제외)
         private IEnumerator CoroPlayStateEnterFX(AnimatorNodeEntryEvent eventInfo)
         {
             if (eventInfo.m_PrefabSpawnDelaySeconds > 0)
@@ -134,12 +154,15 @@ namespace Unity.BossRoom.Gameplay.GameplayObjects.AnimationCallbacks
 
             // should we have no parent transform at all? (Note that we're de-parenting AFTER applying
             // the PrefabParent, so that PrefabParent can still be used to determine the initial position/rotation/scale.)
+            // 아예 부모 변환을 없앨까요? (PrefabsParent를 적용한 후에 부모를 분리하고 있으므로, 
+            // PrefabParent가 여전히 초기 위치/회전/스케일을 결정하는 데 사용될 수 있습니다.)
             if (eventInfo.m_DeParentPrefab)
             {
                 instantiatedFX.transform.SetParent(null);
             }
 
             // now we just need to watch and see if we end up needing to prematurely end these new graphics
+            // 이제 우리는 새로운 그래픽을 조기에 종료해야 하는지 확인하기만 하면 됩니다
             if (eventInfo.m_PrefabCanBeAbortedUntilSecs > 0)
             {
                 float timeRemaining = eventInfo.m_PrefabCanBeAbortedUntilSecs - eventInfo.m_PrefabSpawnDelaySeconds;
@@ -159,7 +182,8 @@ namespace Unity.BossRoom.Gameplay.GameplayObjects.AnimationCallbacks
             }
         }
 
-        // plays the sound effect of an on-entry event
+        // the node we were in has ended! Shut down the FX
+        // 우리가 있던 노드가 끝났습니다! FX를 종료합니다
         private IEnumerator CoroPlayStateEnterSound(AnimatorNodeEntryEvent eventInfo)
         {
             if (eventInfo.m_SoundStartDelaySeconds > 0)
@@ -175,8 +199,10 @@ namespace Unity.BossRoom.Gameplay.GameplayObjects.AnimationCallbacks
             else
             {
                 AudioSource audioSource = GetAudioSourceForLooping();
+                // we're using all our audio sources already. just give up
+                // 이미 모든 오디오 소스를 사용 중입니다. 그냥 포기합니다
                 if (!audioSource)
-                    yield break; // we're using all our audio sources already. just give up
+                    yield break;
                 audioSource.volume = eventInfo.m_VolumeMultiplier;
                 audioSource.loop = true;
                 audioSource.clip = eventInfo.m_SoundEffect;
@@ -191,6 +217,10 @@ namespace Unity.BossRoom.Gameplay.GameplayObjects.AnimationCallbacks
 
         /// <summary>
         /// retrieves an available AudioSource that isn't currently playing a looping sound, or null if none are currently available
+        /// </summary>
+        /// <summary>
+        /// 현재 반복되는 사운드를 재생하지 않고 사용 가능한 AudioSource를 반환하며, 
+        /// 현재 사용 가능한 AudioSource가 없다면 null을 반환합니다
         /// </summary>
         private AudioSource GetAudioSourceForLooping()
         {
@@ -214,6 +244,11 @@ namespace Unity.BossRoom.Gameplay.GameplayObjects.AnimationCallbacks
         /// Precomputes the hashed values for the animator-tags we care about.
         /// (This way we don't have to call Animator.StringToHash() at runtime.)
         /// Also auto-initializes variables when possible.
+        /// </summary>
+        /// <summary>
+        /// 우리가 관심 있는 애니메이터 태그의 해시 값을 미리 계산합니다.
+        /// (이렇게 하면 런타임에서 Animator.StringToHash()를 호출할 필요가 없습니다.)
+        /// 또한 가능한 경우 변수들을 자동으로 초기화합니다.
         /// </summary>
         private void OnValidate()
         {
@@ -240,6 +275,10 @@ namespace Unity.BossRoom.Gameplay.GameplayObjects.AnimationCallbacks
     /// animator node names we reference are actually used by our Animator. We
     /// can also show informational messages about problems with the configuration.
     /// </summary>
+    /// <summary>
+    /// 이것은 인스펙터에 버튼을 추가합니다. 이 버튼을 누르면 우리가 참조하는 모든 애니메이터 노드 이름이 실제로 
+    /// 우리의 애니메이터에서 사용되는지 검증합니다. 또한 구성에 문제가 있는 경우 정보 메시지를 표시할 수 있습니다.
+    /// </summary>
     [CustomEditor(typeof(AnimatorTriggeredSpecialFX))]
     [CanEditMultipleObjects]
     public class AnimatorTriggeredSpecialFXEditor : UnityEditor.Editor
@@ -248,9 +287,11 @@ namespace Unity.BossRoom.Gameplay.GameplayObjects.AnimationCallbacks
         public override void OnInspectorGUI()
         {
             // let Unity do all the normal Inspector stuff...
+            // Unity가 모든 기본 인스펙터 작업을 하도록 합니다
             DrawDefaultInspector();
 
             // ... then we tack extra stuff on the bottom
+            // ... 그런 다음 아래에 추가적인 항목을 덧붙입니다
             var fx = (AnimatorTriggeredSpecialFX)target;
             if (!HasAudioSource(fx))
             {
@@ -263,6 +304,8 @@ namespace Unity.BossRoom.Gameplay.GameplayObjects.AnimationCallbacks
             }
 
             // it's really hard to follow the inspector when there's a lot of these components on the same GameObject... so let's add a bit of whitespace
+            // 동일한 GameObject에 이러한 컴포넌트가 많이 있을 때 인스펙터를 따라가기가 정말 어려우므로, 
+            // 약간의 공백을 추가합니다
             EditorGUILayout.Space(50);
         }
 
@@ -295,17 +338,20 @@ namespace Unity.BossRoom.Gameplay.GameplayObjects.AnimationCallbacks
             if (!animator)
             {
                 // should be impossible because we explicitly RequireComponent the Animator
+                // Animator가 이 GameObject에서 없을 경우! (이건 불가능해야 하므로)
                 EditorUtility.DisplayDialog("Error", "No Animator found on this GameObject!?", "OK");
                 return;
             }
             if (animator.runtimeAnimatorController == null)
             {
                 // perfectly normal user error: they haven't plugged a controller into the Animator
+                // 일반적인 사용자 오류: Animator에 AnimatorController가 연결되지 않았습니다
                 EditorUtility.DisplayDialog("Error", "The Animator does not have an AnimatorController in it!", "OK");
                 return;
             }
 
             // make sure there aren't any duplicated event entries!
+            // 이벤트 항목이 중복되지 않았는지 확인합니다!
             int totalErrors = 0;
             for (int i = 0; i < fx.m_EventsOnNodeEntry.Length; ++i)
             {
@@ -323,6 +369,7 @@ namespace Unity.BossRoom.Gameplay.GameplayObjects.AnimationCallbacks
             }
 
             // create a map of nameHash -> useful debugging information (which we display in the log if there's a problem)
+            // nameHash -> 유용한 디버깅 정보를 매핑합니다 (문제가 있을 경우 로그에서 표시)
             Dictionary<int, string> usedNames = new Dictionary<int, string>();
             for (int i = 0; i < fx.m_EventsOnNodeEntry.Length; ++i)
             {
@@ -332,6 +379,7 @@ namespace Unity.BossRoom.Gameplay.GameplayObjects.AnimationCallbacks
             int totalUsedNames = usedNames.Count;
 
             // now remove all the hashes that are actually used by the controller
+            // 이제 컨트롤러에서 실제로 사용되는 해시를 제거합니다
             AnimatorController controller = GetAnimatorController(animator);
             foreach (var layer in controller.layers)
             {
@@ -342,6 +390,7 @@ namespace Unity.BossRoom.Gameplay.GameplayObjects.AnimationCallbacks
             }
 
             // anything that hasn't gotten removed from usedNames isn't actually valid!
+            // usedNames에서 제거되지 않은 항목은 실제로 유효하지 않습니다!
             foreach (var hash in usedNames.Keys)
             {
                 Debug.LogError("Could not find Animation node named " + usedNames[hash]);
@@ -364,6 +413,12 @@ namespace Unity.BossRoom.Gameplay.GameplayObjects.AnimationCallbacks
         /// seem to work while you're running the game in the editor, but it won't compile when you
         /// try to build a standalone client, because AnimatorController is in an editor-only namespace.)
         /// </summary>
+        /// <summary>
+        /// Animator에서 AnimatorController를 가져옵니다. 중요: 이 기법은 에디터에서만 작동할 수 있습니다.
+        /// 런타임에서는 AnimatorController를 직접 참조할 수 없습니다! (에디터에서 게임을 실행하는 동안에는 
+        /// 작동하는 것처럼 보일 수 있지만, 독립 실행형 클라이언트를 빌드할 때는 컴파일되지 않으며, 
+        /// AnimatorController는 에디터 전용 네임스페이스에 있기 때문입니다.)
+        /// </summary>
         private AnimatorController GetAnimatorController(Animator animator)
         {
             Debug.Assert(animator); // already pre-checked
@@ -373,14 +428,20 @@ namespace Unity.BossRoom.Gameplay.GameplayObjects.AnimationCallbacks
             // at runtime the actual AnimatorController doesn't exist! Only a runtime representation does. (That's why
             // AnimatorController is in the UnityEditor namespace.) But this *isn't* runtime, so when we retrieve the
             // runtime controller, it will actually be a reference to our real AnimatorController.
+            // 우리는 AnimatorController가 필요하지만, Animator에서 직접적으로 이를 가져올 수는 없습니다.
+            // 왜냐하면 실행 중에는 실제 AnimatorController가 존재하지 않기 때문입니다! 오직 실행 시간에 해당하는 표현만 존재합니다. (그래서
+            // AnimatorController는 UnityEditor 네임스페이스에 있습니다.) 하지만 여기는 실행 시간이 아니므로,
+            // 실행 중인 컨트롤러를 가져오면 실제 AnimatorController에 대한 참조가 반환됩니다.
             AnimatorController controller = animator.runtimeAnimatorController as AnimatorController;
             if (controller == null)
             {
                 // if it's not an AnimatorController, it must be an AnimatorOverrideController (because those are currently the only two on-disk representations)
+                // AnimatorController가 아니면, AnimatorOverrideController일 것입니다.
                 var overrideController = animator.runtimeAnimatorController as AnimatorOverrideController;
                 if (overrideController)
                 {
                     // override controllers are not allowed to be nested, so the thing it's overriding has to be our real AnimatorController
+                    // 오버라이드 컨트롤러는 중첩될 수 없으므로, 덮어쓰는 대상이 우리의 실제 AnimatorController여야 합니다.
                     controller = overrideController.runtimeAnimatorController as AnimatorController;
                 }
             }
@@ -388,6 +449,8 @@ namespace Unity.BossRoom.Gameplay.GameplayObjects.AnimationCallbacks
             {
                 // It's neither of the two standard disk representations! ... it must be a new Unity feature or a custom variation
                 // Either way, we don't know how to get the real AnimatorController out of it, so we have to stop
+                // 두 가지 표준 디스크 표현 방식 중 하나가 아닙니다! ... 새로운 Unity 기능이거나 사용자 정의된 변형일 것입니다.
+                // 어쨌든, 우리가 그것에서 실제 AnimatorController를 어떻게 가져올지 모르기 때문에, 그래서 중지해야 합니다.
                 throw new System.Exception($"Unrecognized class derived from RuntimeAnimatorController! {animator.runtimeAnimatorController.GetType().FullName}");
             }
             return controller;

@@ -13,6 +13,10 @@ namespace UUnity.BossRoom.ConnectionManagement
     /// Connection state corresponding to when the NetworkManager is shut down. From this state we can transition to the
     /// ClientConnecting sate, if starting as a client, or the StartingHost state, if starting as a host.
     /// </summary>
+    /// <summary>
+    /// NetworkManager가 종료된 상태에 해당하는 연결 상태입니다. 이 상태에서는 클라이언트로 시작할 경우 
+    /// ClientConnecting 상태로, 호스트로 시작할 경우 StartingHost 상태로 전환할 수 있습니다.
+    /// </summary>
     class OfflineState : ConnectionState
     {
         [Inject]

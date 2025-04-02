@@ -21,9 +21,11 @@ namespace Unity.BossRoom.CameraUtils
             if (m_MainCamera)
             {
                 // camera body / aim
+                // 카메라 본체 / 목표
                 m_MainCamera.Follow = transform;
                 m_MainCamera.LookAt = transform;
                 // default rotation / zoom
+                // 기본 회전 / 줌
                 m_MainCamera.m_Heading.m_Bias = 40f;
                 m_MainCamera.m_YAxis.Value = 0.5f;
             }

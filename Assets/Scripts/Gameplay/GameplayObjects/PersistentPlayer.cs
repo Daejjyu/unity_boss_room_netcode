@@ -8,14 +8,25 @@ using UnityEngine;
 
 namespace Unity.BossRoom.Gameplay.GameplayObjects
 {
-    /// <summary>
+    /// <summary> 
     /// NetworkBehaviour that represents a player connection and is the "Default Player Prefab" inside Netcode for
     /// GameObjects' (Netcode) NetworkManager. This NetworkBehaviour will contain several other NetworkBehaviours that
     /// should persist throughout the duration of this connection, meaning it will persist between scenes.
     /// </summary>
+    /// <summary> 
+    /// 플레이어 연결을 나타내며 Netcode for GameObjects(Netcode)의
+    ///  NetworkManager에서 "기본 플레이어 프리팹" 역할을 하는 NetworkBehaviour입니다.
+    /// 이 NetworkBehaviour는 이 연결이 유지되는 동안 지속되어야 하는 
+    /// 여러 다른 NetworkBehaviour를 포함하며, 이는 씬 간에 지속됨을 의미합니다.
+    /// </summary>
+    ///
     /// <remarks>
     /// It is not necessary to explicitly mark this as a DontDestroyOnLoad object as Netcode will handle migrating this
     /// Player object between scene loads.
+    /// </remarks>
+    /// <remarks>
+    /// Netcode가 씬 로드 간에 이 플레이어 오브젝트를 마이그레이션하므로, 
+    /// 이를 명시적으로 DontDestroyOnLoad 오브젝트로 설정할 필요는 없습니다.
     /// </remarks>
     [RequireComponent(typeof(NetworkObject))]
     public class PersistentPlayer : NetworkBehaviour
@@ -40,6 +51,8 @@ namespace Unity.BossRoom.Gameplay.GameplayObjects
             // Note that this is done here on OnNetworkSpawn in case this NetworkBehaviour's properties are accessed
             // when this element is added to the runtime collection. If this was done in OnEnable() there is a chance
             // that OwnerClientID could be its default value (0).
+            // 이 NetworkBehaviour의 속성이 런타임 컬렉션에 추가될 때 접근될 가능성이 있으므로, OnNetworkSpawn에서 이를 수행합니다.
+            // 만약 OnEnable()에서 수행된다면, OwnerClientID가 기본값(0)일 가능성이 있습니다.
             m_PersistentPlayerRuntimeCollection.Add(this);
             if (IsServer)
             {

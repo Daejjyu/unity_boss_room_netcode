@@ -10,7 +10,10 @@ namespace Unity.BossRoom.Infrastructure
     /// This type of message channel allows the server to publish a message that will be sent to clients as well as
     /// being published locally. Clients and the server both can subscribe to it.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <summary>
+    /// 이 유형의 메시지 채널은 서버가 메시지를 게시할 수 있게 하며, 이 메시지는 클라이언트에게 전송되고 로컬로도 게시됩니다.
+    /// 클라이언트와 서버 모두 이를 구독할 수 있습니다.
+    /// </summary>
     public class NetworkedMessageChannel<T> : MessageChannel<T> where T : unmanaged, INetworkSerializeByMemcpy
     {
         NetworkManager m_NetworkManager;

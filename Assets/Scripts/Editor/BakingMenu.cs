@@ -1,6 +1,6 @@
 using System;
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 using UnityEngine.Rendering;
 
 namespace Unity.BossRoom.Editor
@@ -8,8 +8,17 @@ namespace Unity.BossRoom.Editor
     /// <summary>
     /// This is a script that creates a menu for baking lights (and changing other lighting features) for Boss Room.
     /// </summary>
+    /// <summary>
+    /// 이것은 Boss Room을 위한 조명 베이킹 및 기타 조명 기능을 변경하는 메뉴를 생성하는 스크립트입니다.
+    /// </summary>
     public abstract class BakingMenu
     {
+        /// <summary>
+        /// Handles enabling/disabling environment lights based on their status.
+        /// </summary>
+        /// <param name="realtimeLightsEnabled">Whether to enable or disable realtime lights.</param>
+        /// <param name="bakedLightsEnabled">Whether to enable or disable baked lights.</param>
+        /// <param name="lightingStatus">The status message for the lighting setup.</param>
         static void HandleEnvLights(bool realtimeLightsEnabled, bool bakedLightsEnabled, string lightingStatus)
         {
             var bakedLights = GameObject.FindGameObjectsWithTag("LightingBaked");
@@ -28,6 +37,11 @@ namespace Unity.BossRoom.Editor
             Debug.Log("Environment lights set to " + lightingStatus + ": " + realtimeLights.Length);
         }
 
+        /// <summary>
+        /// Handles enabling/disabling light probes based on their status.
+        /// </summary>
+        /// <param name="lightProbesEnabled">Whether to enable or disable light probes.</param>
+        /// <param name="lightProbesStatus">The status message for the light probes.</param>
         static void HandleLightProbes(bool lightProbesEnabled, string lightProbesStatus)
         {
             var lightProbes = GameObject.FindGameObjectsWithTag("LightingProbes");
@@ -46,6 +60,11 @@ namespace Unity.BossRoom.Editor
             }
         }
 
+        /// <summary>
+        /// Handles setting the reflection probe mode to either baked or realtime.
+        /// </summary>
+        /// <param name="reflectionProbeMode">The mode to set for reflection probes (either Baked or Realtime).</param>
+        /// <param name="refProbesStatus">The status message for reflection probes.</param>
         static void HandleReflectionProbes(ReflectionProbeMode reflectionProbeMode, string refProbesStatus)
         {
             var reflectionProbes = GameObject.FindGameObjectsWithTag("LightingReflectionProbe");

@@ -13,6 +13,14 @@ namespace Unity.BossRoom.ConnectionManagement
     /// reason first, depending on the reason given, may not try to reconnect again and transition directly to the
     /// Offline state.
     /// </summary>
+    /// 
+    /// <summary>
+    /// 서버에 다시 연결을 시도하는 클라이언트에 해당하는 연결 상태입니다.
+    /// ConnectionManager의 NbReconnectAttempts 속성에 정의된 횟수만큼 재연결을 시도합니다.
+    /// 재연결에 성공하면 ClientConnected 상태로 전환되며, 실패하면 Offline 상태로 전환됩니다.
+    /// 만약 연결 해제 사유가 주어진 경우, 해당 사유에 따라 재연결을 시도하지 않고 
+    /// 즉시 Offline 상태로 전환될 수도 있습니다.
+    /// </summary>
     class ClientReconnectingState : ClientConnectingState
     {
         [Inject]
@@ -90,10 +98,10 @@ namespace Unity.BossRoom.ConnectionManagement
 
         IEnumerator ReconnectCoroutine()
         {
-            // If not on first attempt, wait some time before trying again, so that if the issue causing the disconnect
-            // is temporary, it has time to fix itself before we try again. Here we are using a simple fixed cooldown
-            // but we could want to use exponential backoff instead, to wait a longer time between each failed attempt.
-            // See https://en.wikipedia.org/wiki/Exponential_backoff
+            // 첫 번째 시도가 아니라면, 다시 시도하기 전에 잠시 기다립니다. 이는 연결 끊김의 원인이 일시적인 경우,
+            // 문제가 해결될 시간을 주기 위함입니다. 여기서는 단순한 고정된 쿨다운 시간을 사용하지만, 
+            // 각 실패한 시도 사이에 더 긴 시간을 기다리기 위해 지수 백오프(Exponential Backoff)를 사용할 수도 있습니다.
+            // 자세한 내용은 https://en.wikipedia.org/wiki/Exponential_backoff 를 참조하세요.
             if (m_NbAttempts > 0)
             {
                 yield return new WaitForSeconds(k_TimeBetweenAttempts);
@@ -107,9 +115,9 @@ namespace Unity.BossRoom.ConnectionManagement
             Debug.Log($"Reconnecting attempt {m_NbAttempts + 1}/{m_ConnectionManager.NbReconnectAttempts}...");
             m_ReconnectMessagePublisher.Publish(new ReconnectMessage(m_NbAttempts, m_ConnectionManager.NbReconnectAttempts));
 
-            // If first attempt, wait some time before attempting to reconnect to give time to services to update
-            // (i.e. if in a Lobby and the host shuts down unexpectedly, this will give enough time for the lobby to be
-            // properly deleted so that we don't reconnect to an empty lobby
+            // 첫 번째 시도라면, 재연결을 시도하기 전에 잠시 기다립니다.
+            // (예를 들어, 로비에 있을 때 호스트가 예기치 않게 종료된 경우, 이 시간을 주면 로비가 적절히 삭제되어
+            // 빈 로비에 다시 연결되지 않도록 할 수 있습니다.)
             if (m_NbAttempts == 0)
             {
                 yield return new WaitForSeconds(k_TimeBeforeFirstAttempt);
@@ -121,7 +129,7 @@ namespace Unity.BossRoom.ConnectionManagement
 
             if (!reconnectingSetupTask.IsFaulted && reconnectingSetupTask.Result.success)
             {
-                // If this fails, the OnClientDisconnect callback will be invoked by Netcode
+                // 만약 이 과정이 실패하면, Netcode에 의해 OnClientDisconnect 콜백이 호출됩니다.
                 var connectingTask = ConnectClientAsync();
                 yield return new WaitUntil(() => connectingTask.IsCompleted);
             }
@@ -129,11 +137,11 @@ namespace Unity.BossRoom.ConnectionManagement
             {
                 if (!reconnectingSetupTask.Result.shouldTryAgain)
                 {
-                    // setting number of attempts to max so no new attempts are made
+                    // 재시도 횟수를 최대값으로 설정하여 더 이상 새로운 시도가 이루어지지 않도록 합니다.
                     m_NbAttempts = m_ConnectionManager.NbReconnectAttempts;
                 }
-                // Calling OnClientDisconnect to mark this attempt as failed and either start a new one or give up
-                // and return to the Offline state
+                // OnClientDisconnect를 호출하여 이번 시도가 실패했음을 표시하고, 
+                // 새 시도를 시작하거나 포기하고 Offline 상태로 돌아갑니다.
                 OnClientDisconnect(0);
             }
         }

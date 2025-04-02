@@ -16,6 +16,7 @@ namespace Unity.BossRoom.Gameplay.Actions
         public override bool OnUpdate(ServerCharacter clientCharacter)
         {
             // since we return false at Start(), this method should not execute
+            // Start()에서 false를 반환하므로 이 메서드는 실행되지 않아야 합니다.
             throw new InvalidOperationException("No logic defined.");
         }
 

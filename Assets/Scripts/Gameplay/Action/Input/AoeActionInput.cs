@@ -5,11 +5,10 @@ using UnityEngine.AI;
 namespace Unity.BossRoom.Gameplay.Actions
 {
     /// <summary>
-    /// This class is the first step in AoE ability. It will update the initial input visuals' position and will be in charge
-    /// of tracking the user inputs. Once the ability
-    /// is confirmed and the mouse is clicked, it'll send the appropriate RPC to the server, triggering the AoE serer side gameplay logic.
-    /// The server side gameplay action will then trigger the client side resulting FX.
-    /// This action's flow is this: (Client) AoEActionInput --> (Server) AoEAction --> (Client) AoEActionFX
+    /// 이 클래스는 AoE(범위 공격) 능력의 첫 번째 단계입니다. 초기 입력 시각화의 위치를 업데이트하고 사용자 입력을 추적하는 역할을 합니다.
+    /// 능력이 확인되고 마우스가 클릭되면, 서버에 적절한 RPC를 보내 AoE 서버 측 게임 플레이 로직을 트리거합니다.
+    /// 서버 측 게임 플레이 액션은 이후 클라이언트 측 결과적인 FX를 트리거합니다.
+    /// 이 액션의 흐름은 다음과 같습니다: (클라이언트) AoEActionInput --> (서버) AoEAction --> (클라이언트) AoEActionFX
     /// </summary>
     public class AoeActionInput : BaseActionInput
     {
@@ -21,17 +20,15 @@ namespace Unity.BossRoom.Gameplay.Actions
 
         Camera m_Camera;
 
-        //The general action system works on MouseDown events (to support Charged Actions), but that means that if we only wait for
-        //a mouse up event internally, we will fire as part of the same UI click that started the action input (meaning the user would
-        //have to drag her mouse from the button to the firing location). Tracking a mouse-down mouse-up cycle means that a user can
-        //click on the NavMesh separately from the mouse-click that engaged the action (which also makes the UI flow equivalent to the
-        //flow from hitting a number key).
+        // 일반적인 액션 시스템은 마우스 다운 이벤트를 기반으로 작동합니다 (충전된 액션을 지원하기 위해),
+        // 하지만 내부적으로 마우스 업 이벤트만 기다리면 사용자가 액션 입력을 시작한 UI 클릭과 동일한 마우스 클릭으로 발생하기 때문에
+        // 마우스 다운과 마우스 업 주기를 추적하면 사용자가 액션을 시작한 버튼에서 NavMesh로 마우스를 클릭할 수 있습니다.
         bool m_ReceivedMouseDownEvent;
 
         NavMeshHit m_NavMeshHit;
 
-        // plane that has normal pointing up on y, that is 0 distance units displaced from origin
-        // this is also the same height as the NavMesh baked in-game
+        // y 방향으로 위를 향한 노말이 있는 평면, 원점에서 0의 거리 단위로 이동된 평면
+        // 이는 게임 내 NavMesh와 동일한 높이입니다
         static readonly Plane k_Plane = new Plane(Vector3.up, 0f);
 
         void Start()
@@ -55,7 +52,7 @@ namespace Unity.BossRoom.Gameplay.Actions
             m_InRangeVisualization.SetActive(isInRange);
             m_OutOfRangeVisualization.SetActive(!isInRange);
 
-            // wait for the player to click down and then release the mouse button before actually taking the input
+            // 플레이어가 클릭하고 마우스 버튼을 놓은 후 입력을 받습니다
             if (Input.GetMouseButtonDown(0))
             {
                 m_ReceivedMouseDownEvent = true;
@@ -80,20 +77,20 @@ namespace Unity.BossRoom.Gameplay.Actions
         }
 
         /// <summary>
-        /// Utility method to simulate a raycast to a given plane. Does not involve a Physics-based raycast.
+        /// 주어진 평면에 대해 레이캐스트를 시뮬레이션하는 유틸리티 메서드입니다. 물리 기반 레이캐스트를 사용하지 않습니다.
         /// </summary>
-        /// <remarks> Based on documented example here: https://docs.unity3d.com/ScriptReference/Plane.Raycast.html
+        /// <remarks> 문서화된 예제를 기반으로 합니다: https://docs.unity3d.com/ScriptReference/Plane.Raycast.html
         /// </remarks>
         /// <param name="plane"></param>
         /// <param name="ray"></param>
         /// <param name="pointOnPlane"></param>
-        /// <returns> true if intersection point lies inside NavMesh; false otherwise </returns>
+        /// <returns> NavMesh 내에 교차점이 있으면 true, 아니면 false </returns>
         static bool PlaneRaycast(Plane plane, Ray ray, out Vector3 pointOnPlane)
         {
-            // validate that this ray intersects plane
+            // 이 레이가 평면과 교차하는지 확인
             if (plane.Raycast(ray, out var enter))
             {
-                // get the point of intersection
+                // 교차점의 지점을 얻음
                 pointOnPlane = ray.GetPoint(enter);
                 return true;
             }

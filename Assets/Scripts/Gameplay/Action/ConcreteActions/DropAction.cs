@@ -8,6 +8,9 @@ namespace Unity.BossRoom.Gameplay.Actions
     /// <summary>
     /// Action for dropping "Heavy" items.
     /// </summary>
+    /// <summary>
+    /// "Heavy" 아이템을 떨어뜨리는 액션입니다.
+    /// </summary>
     [CreateAssetMenu(menuName = "BossRoom/Actions/Drop Action")]
     public class DropAction : Action
     {
@@ -20,6 +23,7 @@ namespace Unity.BossRoom.Gameplay.Actions
             m_ActionStartTime = Time.time;
 
             // play animation of dropping a heavy object, if one is already held
+            // 이미 아이템을 들고 있다면, 무거운 물건을 떨어뜨리는 애니메이션을 재생합니다.
             if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(
                     serverCharacter.HeldNetworkObject.Value, out var heldObject))
             {
@@ -48,6 +52,7 @@ namespace Unity.BossRoom.Gameplay.Actions
             if (Time.time > m_ActionStartTime + Config.ExecTimeSeconds)
             {
                 // drop the pot in space
+                // 공중에 pot을 떨어뜨립니다.
                 m_HeldNetworkObject.transform.SetParent(null);
                 clientCharacter.HeldNetworkObject.Value = 0;
 

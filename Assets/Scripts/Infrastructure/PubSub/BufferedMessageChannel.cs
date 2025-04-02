@@ -8,6 +8,7 @@ namespace Unity.BossRoom.Infrastructure
         {
             HasBufferedMessage = true;
             BufferedMessage = message;
+            //미리 전송한다
             base.Publish(message);
         }
 
@@ -17,6 +18,7 @@ namespace Unity.BossRoom.Infrastructure
 
             if (HasBufferedMessage)
             {
+                // 신규 구독자에게 이전 메시지를 전송해준다
                 handler?.Invoke(BufferedMessage);
             }
 
