@@ -8,6 +8,9 @@ using Avatar = Unity.BossRoom.Gameplay.Configuration.Avatar;
 
 namespace Unity.BossRoom.Gameplay.GameplayObjects.Character
 {
+  /// <summary>
+  /// NetworkBehaviour component to send/receive GUIDs from server to clients.
+  /// </summary>
   public class NetworkAvatarGuidState : NetworkBehaviour
   {
     [FormerlySerializedAs("AvatarGuidArray")]
@@ -41,9 +44,11 @@ namespace Unity.BossRoom.Gameplay.GameplayObjects.Character
     {
       if (guid.Equals(Guid.Empty))
       {
+        // not a valid Guid
         return;
       }
 
+      // based on the Guid received, Avatar is fetched from AvatarRegistry
       if (!m_AvatarRegistry.TryGetAvatar(guid, out var avatar))
       {
         Debug.LogError("Avatar not found!");
@@ -54,6 +59,13 @@ namespace Unity.BossRoom.Gameplay.GameplayObjects.Character
       {
         // already set, this is an idempotent call, we don't want to Instantiate twice
         return;
+      }
+
+      m_Avatar = avatar;
+
+      if (TryGetComponent<ServerCharacter>(out var serverCharacter))
+      {
+        serverCharacter.CharacterClass = avatar.CharacterClass;
       }
     }
   }

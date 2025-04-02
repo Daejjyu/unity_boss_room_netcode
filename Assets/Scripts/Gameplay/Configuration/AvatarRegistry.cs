@@ -3,6 +3,15 @@ using UnityEngine;
 
 namespace Unity.BossRoom.Gameplay.Configuration
 {
+  /// <summary>
+  /// This ScriptableObject will be the container for all possible Avatars inside BossRoom.
+  /// <see cref="Avatar"/>
+  /// </summary>
+  /// <summary>
+  /// 이 ScriptableObject는 BossRoom 내의 모든 가능한 아바타를 저장하는 
+  /// 컨테이너 역할을 합니다.
+  /// <see cref="Avatar"/>
+  /// </summary>
   [CreateAssetMenu]
   public sealed class AvatarRegistry : ScriptableObject
   {
@@ -26,5 +35,4 @@ namespace Unity.BossRoom.Gameplay.Configuration
       return m_Avatars[UnityEngine.Random.Range(0, m_Avatars.Length)];
     }
   }
-
 }
