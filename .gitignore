@@ -478,3 +478,6 @@ crashlytics-build.properties
 *.xsd
 *.asset
 .plastic
+Assets/TextMesh Pro
+*.shader*
+*.cginc
